@@ -9,14 +9,6 @@
  */
 angular.module('chamleeAngularCouchdbApp')
     .controller('MainCtrl', function ($scope, $http, appSettings) {
-        function getItems() {
-            $http.get(appSettings.db + '/_design/app/_view/byName')
-                .success(function (data) {
-                    console.log(data.rows);
-                    $scope.items = data.rows;
-                });
-        }
-        getItems();
 
         $scope.name = null;
         $scope.price = null;
@@ -25,8 +17,8 @@ angular.module('chamleeAngularCouchdbApp')
 
         $scope.processForm = function () {
             var item = {
-                key: $scope.name,
-                value: $scope.price
+                name: $scope.name,
+                price: $scope.price
             };
             postItem(item);
         };
@@ -34,7 +26,7 @@ angular.module('chamleeAngularCouchdbApp')
         function postItem(item) {
             console.log(item);
             // optimistic ui update
-            $scope.items.push({key: $scope.name, value: $scope.price});
+            $scope.items.push({key: item.name, value: item.price});
             console.log($scope.items);
             // send post request
             $http.post(appSettings.db, item)
@@ -45,4 +37,13 @@ angular.module('chamleeAngularCouchdbApp')
                 // refetch items from server
             });
         }
+
+        function getItems() {
+            $http.get(appSettings.db + '/_design/app/_view/byName')
+                .success(function (data) {
+                    console.log(data.rows);
+                    $scope.items = data.rows;
+                });
+        }
+        getItems();
     });
